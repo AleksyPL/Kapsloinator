@@ -100,69 +100,97 @@ void generateTextFile(string finalPath, string fileName, vector<string>& vectorF
 	}
 	file.close();
 }
-float processFilesFromDirectory(string path, int filesAmount, string finalPath, vector<string>&errorLog, vector<string>&raport)
+float processFilesFromDirectory(string path, string finalPath, vector<string>&errorLog, vector<string>&raport)
 {
-	int rowsInPhoto = 0;
-	int colsInPhoto = 0;
-	if (filesAmount % 5 != 0)
-	{
-		rowsInPhoto = filesAmount / 5 + 1;
-	}
-	else
-	{
-		rowsInPhoto = filesAmount / 5;
-	}
-	if (filesAmount < 5)
-	{
-		colsInPhoto = filesAmount;
-	}
-	else
-	{
-		colsInPhoto = 5;
-	}
-	Mat errorImg = imread("./Error/Error.jpg", IMREAD_UNCHANGED);
-	cv::Mat finalImg(rowsInPhoto * 1000, colsInPhoto * 1000, errorImg.type(), Scalar(0, 0, 0));
-	cout << extractLastFolderName(path) << ": Work in progress..." << endl;
 	std::chrono::duration<float> timeDuration;
+	auto start = std::chrono::high_resolution_clock::now();
 	try
 	{
-		auto start = std::chrono::high_resolution_clock::now();
-		//files
-		for (int i = 0; i < filesAmount; i++)
+		Mat errorImg = imread("./Error/Error.jpg", IMREAD_UNCHANGED);
+		cout << extractLastFolderName(path) << ": Work in progress..." << endl;
+		vector<string>insidePaths;
+		boost::filesystem::path the_path(path);
+		for (auto& p : boost::filesystem::directory_iterator(the_path))
 		{
-			Mat inProgressImg = imread(path + "\\" + std::to_string(i) + ".jpg", IMREAD_UNCHANGED);
-			if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
+			if (boost::filesystem::extension(p.path()) == ".jpg" || boost::filesystem::extension(p.path()) == ".png")
 			{
-				string message = getDate() + " " + getTime() + " Size or name of the picture nr. " + std::to_string(i) + " in " + extractLastFolderName(path) + " folder is incorrect. Skipping picture.";
-				errorLog.push_back(message);
-				cout << message << endl;
-				inProgressImg = errorImg;
+				insidePaths.push_back(p.path().string());
 			}
-			//rows
-			for (int j = 0; j < 1000; j++)
+		}
+		if (insidePaths.size() == 0)
+		{
+			string message = getDate() + " " + getTime() + " Folder " + extractLastFolderName(path) + " is empty. Skipping folder.";
+			raport.push_back(extractLastFolderName(path) + ": " + "0");
+			errorLog.push_back(message);
+			auto stop = std::chrono::high_resolution_clock::now();
+			timeDuration = stop - start;
+			return timeDuration.count();
+		}
+		else
+		{
+			int rowsInPhoto = 0;
+			int colsInPhoto = 0;
+			if (insidePaths.size() % 5 != 0)
 			{
-				//cols
-				for (int k = 0; k < 1000; k++)
+				rowsInPhoto = insidePaths.size() / 5 + 1;
+			}
+			else
+			{
+				rowsInPhoto = insidePaths.size() / 5;
+			}
+			if (insidePaths.size() < 5)
+			{
+				colsInPhoto = insidePaths.size();
+			}
+			else
+			{
+				colsInPhoto = 5;
+			}
+			cv::Mat finalImg(rowsInPhoto * 1000, colsInPhoto * 1000, errorImg.type(), Scalar(0, 0, 0));
+			//files
+			for (int i = 0; i < insidePaths.size(); i++)
+			{
+				Mat inProgressImg = imread(insidePaths[i], IMREAD_UNCHANGED);
+				if (inProgressImg.cols == 0 || inProgressImg.rows == 0)
 				{
-					//3 channels
-					for (int l = 0; l < 3; l++)
+					string message = getDate() + " " + getTime() + " Picture nr. " + std::to_string(i) + " in " + extractLastFolderName(path) + " cannot be loaded. Skipping picture.";
+					errorLog.push_back(message);
+					cout << message << endl;
+					inProgressImg = errorImg;
+				}
+				else if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
+				{
+					Size size(1000, 1000);
+					resize(inProgressImg, inProgressImg, size);
+				}
+				//rows
+				for (int j = 0; j < 1000; j++)
+				{
+					//cols
+					for (int k = 0; k < 1000; k++)
 					{
-						finalImg.at<Vec3b>(i / 5 * 1000 + j, i % 5 * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
+						//3 channels
+						for (int l = 0; l < 3; l++)
+						{
+							finalImg.at<Vec3b>(i / 5 * 1000 + j, i % 5 * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
+						}
 					}
 				}
 			}
+			imwrite(finalPath + "/" + extractLastFolderName(path) + " - FINAL.jpg", finalImg);
+			auto stop = std::chrono::high_resolution_clock::now();
+			timeDuration = stop - start;
+			cout << "Folder " + extractLastFolderName(path) + " processed sucessfully in " << timeDuration.count() << " s." << endl;
 		}
-		imwrite(finalPath + "/" + extractLastFolderName(path) + " - FINAL.jpg", finalImg);
-		auto stop = std::chrono::high_resolution_clock::now();
-		timeDuration = stop - start;
-		cout << "Folder " + extractLastFolderName(path) + " processed sucessfully in "<< timeDuration.count() << " s."<< endl;
-		
 	}
 	catch (cv::Exception& e)
 	{
 		string message = getDate() + " " + getTime() + "Error occured in " + extractLastFolderName(path) + "folder. Skipping folder.";
 		errorLog.push_back(message);
 		cout << message << endl;
+		auto stop = std::chrono::high_resolution_clock::now();
+		timeDuration = stop - start;
+		return timeDuration.count();
 	}
 	return timeDuration.count();
 }
@@ -184,23 +212,9 @@ int main()
 		errorLog.push_back(message);
 		cout << message << endl;
 	}
+	//to refactor
 	else
 	{
-		//vector<string>insidePaths;
-		//boost::filesystem::path the_path(path);
-		//for (auto& p : boost::filesystem::directory_iterator(the_path))
-		//{
-		//	if (boost::filesystem::extension(p.path()) == ".jpg" || boost::filesystem::extension(p.path()) == ".png")
-		//	{
-		//		insidePaths.push_back(p.path().string());
-		//	}
-		//	//insidePaths.push_back(p.path().string());
-		//	//cout << p << endl;
-		//}
-		//for (int i = 0; i < insidePaths.size(); i++)
-		//{
-		//	cout << insidePaths[i] << endl;
-		//}
 		filesAmount = returnAmountOfFilesInDirectory(path);
 		if (filesAmount == 0)
 		{
@@ -229,7 +243,7 @@ int main()
 				for (int i = 0; i < pathsToFoldersInside.size(); i++)
 				{
 					raport.push_back(extractLastFolderName(pathsToFoldersInside[i]) + ": " + std::to_string(returnAmountOfFilesInDirectory(pathsToFoldersInside[i])));
-					totalTime += processFilesFromDirectory(pathsToFoldersInside[i],returnAmountOfFilesInDirectory(pathsToFoldersInside[i]),finalPath, errorLog, raport);
+					totalTime += processFilesFromDirectory(pathsToFoldersInside[i],finalPath, errorLog, raport);
 				}
 				cout << "DONE!" << endl;
 				cout << "Total time: " << totalTime << " s." << endl;
@@ -239,12 +253,12 @@ int main()
 		{
 			//only one folder
 			raport.push_back(extractLastFolderName(path) + ": " + std::to_string(returnAmountOfFilesInDirectory(path)));
-			totalTime += processFilesFromDirectory(path, filesAmount, finalPath, errorLog, raport);
+			totalTime += processFilesFromDirectory(path, finalPath, errorLog, raport);
 			cout << "DONE!" << endl;
 			cout << "Total time: " << totalTime << " s." << endl;
 		}
 	}
-	//generateTextFile(finalPath, "Summary", raport);
-	//generateTextFile(finalPath, "ErrorLog", errorLog);
+	generateTextFile(finalPath, "Summary", raport);
+	generateTextFile(finalPath, "ErrorLog", errorLog);
 	return 0;
 }
