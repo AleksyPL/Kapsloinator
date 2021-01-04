@@ -12,6 +12,7 @@ At this stage, the program has one catalog with files.
 This program can handle JPG and PNG files. Files with any different file format will be skipped.
 For the best final result, images should be resized to 1000x1000px. If the size of the image is different, it will be resized by force. The final image size is determined by the number of files in the directory.
 <br>
+<br>
 
 ![](KapsleBA.png)
 
