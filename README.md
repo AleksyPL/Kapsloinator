@@ -1,7 +1,7 @@
 <h1>Idea</h1>
-I like beer, but I also like to collect something. My idea was to combine these two activities.
-I made a program for the presentation of bottle caps on one big photo for easier collection and showing them to my friends.
-A program is using OpenCV and Boost libraries.
+I like beer, but I also like to collect things. My idea was to combine these two activities.
+<br>I made a program which organises bottle cap pictures into one big photo for easier review and showcasing for my friends.
+<br>A program is using OpenCV and Boost libraries.
 
 <h1>Setup</h1><br>
 The user has to insert two paths on the program start, the first path to the source folder, and the second path for processed files.
@@ -14,4 +14,4 @@ This program can handle JPG and PNG files. Files with any different file format 
 
 ![](KapsleBA.png)
 
-The program will count time during file processing. Together with the final image, a summary report will be generated. If the program occurs any error, the user will be informed in the console, and the special log file will be also generated. 
+The program will count time during file processing. Together with the final image, a summary report will be generated. If an error occurs, the user will be informed in the console, and the special log file will be also generated.
