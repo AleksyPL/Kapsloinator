@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fstream>
 #include <filesystem>
+#include <windows.h>
 
 using namespace cv;
 namespace fs = std::filesystem;
@@ -18,6 +19,11 @@ using std::vector;
 using std::fstream;
 using std::ios;
 
+//int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpszCmdLine, int iCmdShow)
+//{
+//	MessageBox(NULL,L"Hello",L"sraka", MB_OK);
+//	return 0;
+//}
 void generateTextFile(string finalPath, string fileName, vector<string>& vectorFile)
 {
 	std::fstream file;
@@ -148,149 +154,160 @@ float processFiles(vector<string>insidePaths, string fileName, string finalPath,
 	try
 	{
 		Mat errorImg = imread("./Error/Error.jpg", IMREAD_UNCHANGED);
-		cout << fileName << ": Work in progress..." << endl;
 		int targetHeight = 7;
 		int targetWidth = 6;
-		//if (insidePaths.size() > (targetHeight * targetWidth))
-		//{
-		//	int picturesPart = 0;
-		//	int indexX = 0;
-		//	int indexY = 0;
-		//	cv::Mat finalImg(targetHeight * 1000, targetWidth * 1000, errorImg.type(), Scalar(0, 0, 0));
-		//	//files
-		//	for (int i = 0; i < insidePaths.size(); i++)
-		//	{
-		//		Mat inProgressImg = imread(insidePaths[i], IMREAD_UNCHANGED);
-		//		if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
-		//		{
-		//			Size size(1000, 1000);
-		//			resize(inProgressImg, inProgressImg, size);
-		//		}
-		//		//rows
-		//		for (int j = 0; j < 1000; j++)
-		//		{
-		//			//cols
-		//			for (int k = 0; k < 1000; k++)
-		//			{
-		//				//3 channels
-		//				for (int l = 0; l < 3; l++)
-		//				{
-		//					finalImg.at<Vec3b>(indexY * 1000 + j, indexX * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
-		//				}
-		//			}
-		//		}
-		//		indexX++;
-		//		if (indexX == targetWidth)
-		//		{
-		//			if (indexY == targetHeight - 1)
-		//			{
-		//				cv::imwrite(finalPath + "/" + fileName + " - FINAL(" + std::to_string(picturesPart) + ").jpg", finalImg);
-		//				int remainingFiles = insidePaths.size() - i - 1;
-		//				if (remainingFiles > targetHeight * targetWidth)
-		//				{
-		//					finalImg = Mat::zeros(targetHeight * 1000, targetWidth * 1000, finalImg.type());
-		//				}
-		//				else
-		//				{
-		//					int newSizeX = 0;
-		//					int newSizeY = 0;
-		//					//setting Y size
-		//					if (remainingFiles % targetHeight != 0)
-		//					{
-		//						newSizeY = remainingFiles / targetHeight + 1;
-		//					}
-		//					else
-		//					{
-		//						newSizeY = remainingFiles / targetHeight;
-		//					}
-		//					//setting X size
-		//					if (remainingFiles < targetWidth)
-		//					{
-		//						newSizeX = remainingFiles;
-		//					}
-		//					else
-		//					{
-		//						newSizeX = targetWidth;
-		//					}
-		//					finalImg = Mat::zeros(newSizeY * 1000, newSizeX * 1000, finalImg.type());
-		//				}
-		//				picturesPart++;
-		//				indexX = 0;
-		//				indexY = 0;
-		//			}
-		//			else
-		//			{
-		//				indexX = 0;
-		//				indexY++;
-		//			}
-		//		}
-		//	}
-		//	cv::imwrite(finalPath + "/" + fileName + " - FINAL(" + std::to_string(picturesPart) + ").jpg", finalImg);
-		//	auto stop = std::chrono::high_resolution_clock::now();
-		//	timeDuration = stop - start;
-		//	cout << "Folder " + fileName + " processed sucessfully in " << timeDuration.count() << " s." << endl;
-		//	raport.push_back(fileName + ": " + std::to_string(insidePaths.size()));
-		//}
-		//else
-		//{
-		//	int indexX = 0;
-		//	int indexY = 0;
-		//	int pictureSizeX = 0;
-		//	int pictureSizeY = 0;
-		//	//setting Y size
-		//	if (insidePaths.size() % targetWidth != 0)
-		//	{
-		//		pictureSizeY = insidePaths.size() / targetWidth + 1;
-		//	}
-		//	else
-		//	{
-		//		pictureSizeY = insidePaths.size() / targetWidth;
-		//	}
-		//	//setting X size
-		//	if (insidePaths.size() < targetWidth)
-		//	{
-		//		pictureSizeX = insidePaths.size();
-		//	}
-		//	else
-		//	{
-		//		pictureSizeX = targetWidth;
-		//	}
-		//	cv::Mat finalImg(pictureSizeY * 1000, pictureSizeX * 1000, errorImg.type(), Scalar(0, 0, 0));
-		//	//files
-		//	for (int i = 0; i < insidePaths.size(); i++)
-		//	{
-		//		Mat inProgressImg = imread(insidePaths[i], IMREAD_UNCHANGED);
-		//		if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
-		//		{
-		//			Size size(1000, 1000);
-		//			resize(inProgressImg, inProgressImg, size);
-		//		}
-		//		//rows
-		//		for (int j = 0; j < 1000; j++)
-		//		{
-		//			//cols
-		//			for (int k = 0; k < 1000; k++)
-		//			{
-		//				//3 channels
-		//				for (int l = 0; l < 3; l++)
-		//				{
-		//					finalImg.at<Vec3b>(indexY * 1000 + j, indexX * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
-		//				}
-		//			}
-		//		}
-		//		indexX++;
-		//		if (indexX == targetWidth)
-		//		{
-		//			indexX = 0;
-		//			indexY++;
-		//		}
-		//	}
-		//	cv::imwrite(finalPath + "/" + fileName + " - FINAL.jpg", finalImg);
-		//	auto stop = std::chrono::high_resolution_clock::now();
-		//	timeDuration = stop - start;
-		//	cout << "Folder " + fileName + " processed sucessfully in " << timeDuration.count() << " s." << endl;
-		//	raport.push_back(fileName + ": " + std::to_string(insidePaths.size()));
-		//}
+		if (insidePaths.size() > (targetHeight * targetWidth))
+		{
+			cout << "The number of photos in the " << fileName << " folder exceeds the photo dimensions. Estimated number of parts: " << int(insidePaths.size() / (targetHeight * targetWidth))+1 << endl;
+			cout << "Processing part 1..." << endl;
+			int picturesPart = 0;
+			int indexX = 0;
+			int indexY = 0;
+			cv::Mat finalImg(targetHeight * 1000, targetWidth * 1000, errorImg.type(), Scalar(0, 0, 0));
+			//files
+			for (int i = 0; i < insidePaths.size(); i++)
+			{
+				Mat inProgressImg = imread(insidePaths[i], IMREAD_UNCHANGED);
+				if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
+				{
+					Size size(1000, 1000);
+					resize(inProgressImg, inProgressImg, size);
+				}
+				else if (inProgressImg.cols == 0 || inProgressImg.rows == 0)
+				{
+					continue;
+				}
+				//rows
+				for (int j = 0; j < 1000; j++)
+				{
+					//cols
+					for (int k = 0; k < 1000; k++)
+					{
+						//3 channels
+						for (int l = 0; l < 3; l++)
+						{
+							finalImg.at<Vec3b>(indexY * 1000 + j, indexX * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
+						}
+					}
+				}
+				indexX++;
+				if (indexX == targetWidth)
+				{
+					if (indexY == targetHeight - 1)
+					{
+						cv::imwrite(finalPath + "/" + fileName + " - FINAL(" + std::to_string(picturesPart) + ").jpg", finalImg);
+						cout << "Processing part " << picturesPart + 2 << "..." << endl;
+						int remainingFiles = insidePaths.size() - i - 1;
+						if (remainingFiles > targetHeight * targetWidth)
+						{
+							finalImg = Mat::zeros(targetHeight * 1000, targetWidth * 1000, finalImg.type());
+						}
+						else
+						{
+							int newSizeX = 0;
+							int newSizeY = 0;
+							//setting Y size
+							if (remainingFiles % targetWidth != 0)
+							{
+								newSizeY = remainingFiles / targetWidth + 1;
+							}
+							else
+							{
+								newSizeY = remainingFiles / targetWidth;
+							}
+							//setting X size
+							if (remainingFiles < targetWidth)
+							{
+								newSizeX = remainingFiles;
+							}
+							else
+							{
+								newSizeX = targetWidth;
+							}
+							finalImg = Mat::zeros(newSizeY * 1000, newSizeX * 1000, finalImg.type());
+						}
+						picturesPart++;
+						indexX = 0;
+						indexY = 0;
+					}
+					else
+					{
+						indexX = 0;
+						indexY++;
+					}
+				}
+			}
+			cv::imwrite(finalPath + "/" + fileName + " - FINAL(" + std::to_string(picturesPart) + ").jpg", finalImg);
+			auto stop = std::chrono::high_resolution_clock::now();
+			timeDuration = stop - start;
+			cout << "Folder " + fileName + " processed sucessfully in " << timeDuration.count() << " s." << endl;
+			raport.push_back(fileName + ": " + std::to_string(insidePaths.size()));
+		}
+		else
+		{
+			cout << fileName << ": Work in progress..." << endl;
+			int indexX = 0;
+			int indexY = 0;
+			int pictureSizeX = 0;
+			int pictureSizeY = 0;
+			//setting Y size
+			if (insidePaths.size() % targetWidth != 0)
+			{
+				pictureSizeY = insidePaths.size() / targetWidth + 1;
+			}
+			else
+			{
+				pictureSizeY = insidePaths.size() / targetWidth;
+			}
+			//setting X size
+			if (insidePaths.size() < targetWidth)
+			{
+				pictureSizeX = insidePaths.size();
+			}
+			else
+			{
+				pictureSizeX = targetWidth;
+			}
+			cv::Mat finalImg(pictureSizeY * 1000, pictureSizeX * 1000, errorImg.type(), Scalar(0, 0, 0));
+			//files
+			for (int i = 0; i < insidePaths.size(); i++)
+			{
+				Mat inProgressImg = imread(insidePaths[i], IMREAD_UNCHANGED);
+				if (inProgressImg.cols != 1000 || inProgressImg.rows != 1000)
+				{
+					Size size(1000, 1000);
+					resize(inProgressImg, inProgressImg, size);
+				}
+				else if (inProgressImg.cols == 0 || inProgressImg.rows == 0)
+				{
+					continue;
+				}
+				//rows
+				for (int j = 0; j < 1000; j++)
+				{
+					//cols
+					for (int k = 0; k < 1000; k++)
+					{
+						//3 channels
+						for (int l = 0; l < 3; l++)
+						{
+							finalImg.at<Vec3b>(indexY * 1000 + j, indexX * 1000 + k)[l] = inProgressImg.at<Vec3b>(j, k)[l];
+						}
+					}
+				}
+				indexX++;
+				if (indexX == targetWidth)
+				{
+					indexX = 0;
+					indexY++;
+				}
+			}
+			cv::imwrite(finalPath + "/" + fileName + " - FINAL.jpg", finalImg);
+			auto stop = std::chrono::high_resolution_clock::now();
+			timeDuration = stop - start;
+			cout << "Folder " + fileName + " processed sucessfully in " << timeDuration.count() << " s." << endl;
+			raport.push_back(fileName + ": " + std::to_string(insidePaths.size()));
+		}
 	}
 	catch (cv::Exception& e)
 	{
